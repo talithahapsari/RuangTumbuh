@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruang Tumbuh — Pantau Tumbuh Kembang Anak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#AEDCF5;
+    --blue-deep:#4FA0CF;
+    --blue-ink:#2E5E78;
+    --pink:#FBC9D6;
+    --pink-deep:#E8799E;
+    --bg:#FAFCFF;
+    --card:#FFFFFF;
+    --text:#2E3A45;
+    --muted:#7C8A96;
+    --line:#E6EEF4;
+    --green:#48A97C;
+    --green-bg:#E7F6EE;
+    --yellow:#D89A2C;
+    --yellow-bg:#FCF2DD;
+    --red:#D85C72;
+    --red-bg:#FBE6EA;
+    --radius:18px;
+    --shadow:0 8px 24px rgba(79,160,207,0.12);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Arial, Helvetica, sans-serif;line-height:1.55;}
+  h1,h2,h3,h4,.brand,.navlink,button,.tab{font-family:'Poppins',Arial,sans-serif;}
+  a{color:inherit;}
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 28px;
+    background:linear-gradient(135deg, var(--blue) 0%, var(--pink) 100%);
+    box-shadow:var(--shadow);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--blue-ink);}
+  .brand .sprout{font-size:24px;}
+  .navlinks{display:flex;gap:6px;flex-wrap:wrap;}
+  .navlink{
+    border:none;background:rgba(255,255,255,0.55);color:var(--blue-ink);
+    padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;
+    transition:.18s;
+  }
+  .navlink:hover{background:#fff;}
+  .navlink.active{background:var(--blue-ink);color:#fff;}
+
+  main{max-width:980px;margin:0 auto;padding:28px 20px 80px;}
+  .page{display:none;animation:fade .35s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:linear-gradient(135deg, var(--blue) 0%, #EAF6FD 55%, var(--pink) 100%);
+    border-radius:24px;padding:46px 36px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;
+    box-shadow:var(--shadow);
+  }
+  .hero-text{flex:1;min-width:260px;}
+  .hero h1{font-size:34px;margin:0 0 10px;color:var(--blue-ink);font-weight:800;}
+  .hero p{color:var(--text);font-size:15.5px;max-width:480px;margin:0 0 20px;}
+  .cta-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn{
+    border:none;cursor:pointer;border-radius:999px;padding:12px 22px;font-weight:700;font-size:14.5px;
+    font-family:'Poppins',Arial,sans-serif;transition:.18s;
+  }
+  .btn-primary{background:var(--blue-ink);color:#fff;}
+  .btn-primary:hover{background:#234a60;}
+  .btn-secondary{background:#fff;color:var(--pink-deep);border:2px solid var(--pink-deep);}
+  .btn-secondary:hover{background:var(--pink-deep);color:#fff;}
+
+  .sprout-illustration{width:180px;height:180px;flex-shrink:0;}
+
+  .menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:30px;}
+  .menu-card{
+    background:var(--card);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);
+    cursor:pointer;border:2px solid transparent;transition:.2s;
+  }
+  .menu-card:hover{border-color:var(--blue-deep);transform:translateY(-3px);}
+  .menu-card .icon{font-size:30px;margin-bottom:10px;display:block;}
+  .menu-card h3{margin:0 0 6px;font-size:17px;color:var(--blue-ink);}
+  .menu-card p{margin:0;font-size:13.5px;color:var(--muted);}
+
+  /* ---------- Section headers ---------- */
+  .section-head{margin-bottom:22px;}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:.08em;color:var(--pink-deep);text-transform:uppercase;}
+  .section-head h2{margin:4px 0 6px;font-size:26px;color:var(--blue-ink);}
+  .section-head p{margin:0;color:var(--muted);font-size:14.5px;}
+
+  /* ---------- Form/Card ---------- */
+  .card{background:var(--card);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);}
+  .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:13px;font-weight:600;color:var(--blue-ink);}
+  .field input,.field select{
+    padding:10px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:14.5px;
+    font-family:Arial,sans-serif;background:#FBFDFF;color:var(--text);
+  }
+  .field input:focus,.field select:focus{outline:2px solid var(--blue-deep);border-color:var(--blue-deep);}
+  .field-full{grid-column:1/-1;}
+  .form-actions{margin-top:22px;display:flex;gap:12px;flex-wrap:wrap;}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .error-box{background:var(--red-bg);color:var(--red);border-radius:10px;padding:10px 14px;font-size:13.5px;margin-bottom:14px;display:none;}
+
+  /* ---------- Result ---------- */
+  .overall-banner{
+    display:flex;align-items:center;gap:18px;border-radius:var(--radius);padding:22px 26px;margin-bottom:22px;
+  }
+  .overall-banner.hijau{background:var(--green-bg);border:2px solid var(--green);}
+  .overall-banner.kuning{background:var(--yellow-bg);border:2px solid var(--yellow);}
+  .overall-banner.merah{background:var(--red-bg);border:2px solid var(--red);}
+  .status-dot{width:16px;height:16px;border-radius:50%;flex-shrink:0;}
+  .status-dot.hijau{background:var(--green);}
+  .status-dot.kuning{background:var(--yellow);}
+  .status-dot.merah{background:var(--red);}
+  .overall-banner h3{margin:0 0 3px;font-size:18px;}
+  .overall-banner p{margin:0;font-size:13.5px;color:var(--muted);}
+
+  .index-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+  .index-card{border-radius:14px;padding:18px;border:1.5px solid var(--line);background:#fff;}
+  .index-card .label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;}
+  .index-card .badge{
+    display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:5px 12px;border-radius:999px;
+    font-size:12.5px;font-weight:700;
+  }
+  .badge.hijau{background:var(--green-bg);color:var(--green);}
+  .badge.kuning{background:var(--yellow-bg);color:var(--yellow);}
+  .badge.merah{background:var(--red-bg);color:var(--red);}
+  .index-card .zval{font-size:22px;font-weight:800;color:var(--blue-ink);margin-top:10px;}
+  .index-card .zsub{font-size:12px;color:var(--muted);}
+
+  .reco-box{background:#F2FAFD;border-radius:14px;padding:18px 20px;margin-top:6px;border:1.5px solid var(--blue);}
+  .reco-box h4{margin:0 0 8px;color:var(--blue-ink);font-size:15.5px;}
+  .reco-box ul{margin:0;padding-left:20px;font-size:14px;}
+  .reco-box li{margin-bottom:5px;}
+
+  /* ---------- History ---------- */
+  .table-wrap{overflow-x:auto;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);}
+  th{color:var(--blue-ink);font-family:'Poppins',Arial,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.03em;}
+  .dot-inline{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+  .empty-state{text-align:center;padding:50px 20px;color:var(--muted);}
+  .empty-state .icon{font-size:40px;display:block;margin-bottom:10px;}
+
+  .chart-controls{display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;}
+  select.chart-select{padding:8px 12px;border-radius:10px;border:1.5px solid var(--line);font-size:13.5px;}
+
+  /* ---------- Edukasi ---------- */
+  .accordion-item{border:1.5px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden;}
+  .accordion-head{
+    display:flex;justify-content:space-between;align-items:center;padding:16px 18px;cursor:pointer;
+    background:#fff;font-weight:700;color:var(--blue-ink);font-size:15px;
+  }
+  .accordion-head:hover{background:#F7FBFE;}
+  .accordion-body{padding:0 18px;max-height:0;overflow:hidden;transition:max-height .25s ease;background:#FCFEFF;}
+  .accordion-body-inner{padding:14px 0 18px;font-size:14px;}
+  .accordion-item.open .accordion-body{max-height:600px;}
+  .chev{transition:.2s;}
+  .accordion-item.open .chev{transform:rotate(180deg);}
+
+  footer{text-align:center;padding:24px;color:var(--muted);font-size:12.5px;}
+
+  @media (max-width:600px){
+    .topbar{padding:12px 14px;flex-direction:column;gap:10px;align-items:flex-start;}
+    .hero{padding:30px 22px;}
+    .hero h1{font-size:26px;}
+  }
+
+  *:focus-visible{outline:2px solid var(--blue-deep);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <div class="brand"><span class="sprout">🌱</span> Ruang Tumbuh</div>
+  <div class="navlinks">
+    <button class="navlink active" data-page="beranda">Beranda</button>
+    <button class="navlink" data-page="kalkulator">Kalkulator</button>
+    <button class="navlink" data-page="riwayat">Riwayat</button>
+    <button class="navlink" data-page="edukasi">Edukasi &amp; MPASI</button>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ============ BERANDA ============ -->
+  <section id="beranda" class="page active">
+    <div class="hero">
+      <div class="hero-text">
+        <h1>Pantau tumbuh kembang si kecil, sekarang lebih mudah.</h1>
+        <p>Ruang Tumbuh membantu orang tua mengecek status gizi anak berdasarkan standar WHO, menyimpan riwayat pertumbuhan, dan memberi rekomendasi menu MPASI yang sesuai usia.</p>
+        <div class="cta-row">
+          <button class="btn btn-primary" data-goto="kalkulator">Mulai Cek Status Gizi</button>
+          <button class="btn btn-secondary" data-goto="riwayat">Lihat Riwayat</button>
+        </div>
+      </div>
+      <svg class="sprout-illustration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="100" cy="170" r="22" fill="#E8799E" opacity="0.25"/>
+        <path d="M100 170 V100" stroke="#4FA0CF" stroke-width="6" stroke-linecap="round"/>
+        <path d="M100 130 C70 120, 60 90, 80 70 C95 100, 100 115, 100 130 Z" fill="#48A97C"/>
+        <path d="M100 110 C130 100, 140 70, 120 50 C105 80, 100 95, 100 110 Z" fill="#6FC79A"/>
+        <circle cx="100" cy="55" r="16" fill="#FBC9D6"/>
+        <circle cx="100" cy="55" r="7" fill="#E8799E"/>
+      </svg>
+    </div>
+
+    <div class="menu-grid">
+      <div class="menu-card" data-goto="kalkulator">
+        <span class="icon">🧮</span>
+        <h3>Kalkulator Status Gizi</h3>
+        <p>Hitung Z-score TB/U, BB/U, BB/TB, dan IMT/U sesuai standar WHO.</p>
+      </div>
+      <div class="menu-card" data-goto="riwayat">
+        <span class="icon">📈</span>
+        <h3>Riwayat Pertumbuhan</h3>
+        <p>Lihat grafik dan perkembangan status gizi anak dari waktu ke waktu.</p>
+      </div>
+      <div class="menu-card" data-goto="edukasi">
+        <span class="icon">🍲</span>
+        <h3>Edukasi &amp; Menu MPASI</h3>
+        <p>Rekomendasi gizi dan contoh menu MPASI sesuai kelompok usia anak.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ KALKULATOR ============ -->
+  <section id="kalkulator" class="page">
+    <div class="section-head">
+      <div class="eyebrow">Kalkulator</div>
+      <h2>Cek Status Gizi Anak</h2>
+      <p>Isi data anak di bawah ini. Hasil akan dihitung otomatis berdasarkan standar pertumbuhan WHO.</p>
+    </div>
+
+    <div class="card">
+      <div class="error-box" id="formError"></div>
+      <form id="giziForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="nama">Nama anak</label>
+            <input type="text" id="nama" required placeholder="contoh: Aira">
+          </div>
+          <div class="field">
+            <label for="jk">Jenis kelamin</label>
+            <select id="jk" required>
+              <option value="">Pilih</option>
+              <option value="boy">Laki-laki</option>
+              <option value="girl">Perempuan</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="tglLahir">Tanggal lahir</label>
+            <input type="date" id="tglLahir" required>
+          </div>
+          <div class="field">
+            <label for="tglPeriksa">Tanggal pemeriksaan</label>
+            <input type="date" id="tglPeriksa" required>
+          </div>
+          <div class="field">
+            <label for="tb">Tinggi / panjang badan (cm)</label>
+            <input type="number" id="tb" step="0.1" min="20" max="200" required placeholder="contoh: 78.5">
+          </div>
+          <div class="field">
+            <label for="bb">Berat badan (kg)</label>
+            <input type="number" id="bb" step="0.01" min="1" max="150" required placeholder="contoh: 9.2">
+          </div>
+          <div class="field">
+            <label for="asi">Riwayat ASI</label>
+            <select id="asi">
+              <option value="">Tidak diisi</option>
+              <option>ASI eksklusif 0–6 bulan</option>
+              <option>ASI tidak eksklusif</option>
+              <option>Tidak mendapat ASI</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="penyakit">Riwayat penyakit</label>
+            <input type="text" id="penyakit" placeholder="contoh: tidak ada / diare berulang">
+          </div>
+          <div class="field">
+            <label for="nafsu">Nafsu makan anak</label>
+            <select id="nafsu">
+              <option value="">Tidak diisi</option>
+              <option>Baik</option>
+              <option>Cukup</option>
+              <option>Kurang</option>
+            </select>
+          </div>
+        </div>
+        <p class="hint">Usia anak akan dihitung otomatis dari tanggal lahir dan tanggal pemeriksaan. Hasil kalkulator ini bersifat edukatif menggunakan pendekatan referensi median ± SD WHO, dan tidak menggantikan pemeriksaan tenaga kesehatan.</p>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Hitung Status Gizi</button>
+          <button type="reset" class="btn btn-secondary">Bersihkan Form</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ HASIL ============ -->
+  <section id="hasil" class="page">
+    <div class="section-head">
+      <div class="eyebrow">Hasil</div>
+      <h2 id="hasilNama">Hasil Pemeriksaan</h2>
+      <p id="hasilSub"></p>
+    </div>
+    <div id="hasilContent"></div>
+    <div class="form-actions" style="margin-top:8px;">
+      <button class="btn btn-secondary" data-goto="kalkulator">Periksa Anak Lain</button>
+      <button class="btn btn-primary" data-goto="riwayat">Lihat Riwayat</button>
+    </div>
+  </section>
+
+  <!-- ============ RIWAYAT ============ -->
+  <section id="riwayat" class="page">
+    <div class="section-head">
+      <div class="eyebrow">Riwayat</div>
+      <h2>Riwayat Pertumbuhan Anak</h2>
+      <p>Pantau perubahan status gizi dari setiap kunjungan yang sudah dihitung.</p>
+    </div>
+    <div id="riwayatContent" class="card"></div>
+  </section>
+
+  <!-- ============ EDUKASI ============ -->
+  <section id="edukasi" class="page">
+    <div class="section-head">
+      <div class="eyebrow">Edukasi &amp; MPASI</div>
+      <h2>Rekomendasi Gizi &amp; Menu MPASI</h2>
+      <p>Pilih kelompok usia anak untuk melihat saran gizi dan contoh menu sehari-hari.</p>
+    </div>
+    <div id="edukasiContent"></div>
+  </section>
+
+</main>
+
+<footer>Ruang Tumbuh · Alat bantu edukasi gizi anak · Bukan pengganti konsultasi tenaga kesehatan</footer>
+
+<script>
+(function(){
+
+/* ===================== NAVIGATION ===================== */
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.navlink').forEach(b=>b.classList.toggle('active', b.dataset.page===id));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('.navlink').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+document.querySelectorAll('[data-goto]').forEach(el=>el.addEventListener('click',()=>showPage(el.dataset.goto)));
+
+/* ===================== REFERENCE DATA (approximate WHO-based) ===================== */
+const REF = {
+  boy:{
+    weightAge:{points:[0,6,12,18,24,30,36,42,48,54,60], median:[3.3,7.9,9.6,10.9,12.2,13.3,14.3,15.3,16.3,17.3,18.3]},
+    heightAge:{points:[0,6,12,18,24,30,36,42,48,54,60], median:[49.9,67.6,75.7,80.7,87.1,91.9,96.1,99.9,103.3,106.7,110.0]},
+    bmiYears:{points:[5,6,7,8,9,10,11,12,13,14,15,16,17,18], median:[15.3,15.2,15.2,15.4,15.6,15.9,16.4,17.0,17.7,18.4,19.0,19.5,19.9,20.3]}
+  },
+  girl:{
+    weightAge:{points:[0,6,12,18,24,30,36,42,48,54,60], median:[3.2,7.3,8.9,10.2,11.5,12.5,13.5,14.5,15.5,16.5,17.5]},
+    heightAge:{points:[0,6,12,18,24,30,36,42,48,54,60], median:[49.1,65.7,74.0,79.1,85.7,90.4,94.7,98.4,101.8,105.2,108.5]},
+    bmiYears:{points:[5,6,7,8,9,10,11,12,13,14,15,16,17,18], median:[15.2,15.1,15.1,15.3,15.6,16.0,16.6,17.3,18.0,18.7,19.2,19.6,19.8,20.0]}
+  },
+  weightHeight:{
+    points:[45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120],
+    boy:[2.4,3.3,4.5,5.8,7.0,8.2,9.2,10.2,11.0,11.9,12.8,13.7,14.7,15.8,17.0,18.3],
+    girl:[2.2,3.1,4.2,5.4,6.6,7.7,8.7,9.6,10.5,11.4,12.3,13.3,14.4,15.6,16.9,18.3]
+  }
+};
+const SDF = { weightAge:0.13, heightAge:0.04, bmi:0.09, weightHeight:0.10 };
+
+function interp(points, values, x){
+  if(x<=points[0]) return values[0];
+  if(x>=points[points.length-1]) return values[values.length-1];
+  for(let i=0;i<points.length-1;i++){
+    if(x>=points[i] && x<=points[i+1]){
+      const t=(x-points[i])/(points[i+1]-points[i]);
+      return values[i] + t*(values[i+1]-values[i]);
+    }
+  }
+}
+
+function ageInMonths(birth, exam){
+  let months = (exam.getFullYear()-birth.getFullYear())*12 + (exam.getMonth()-birth.getMonth());
+  if(exam.getDate() < birth.getDate()) months -= 1;
+  return Math.max(0, months);
+}
+function ageLabel(months){
+  const y = Math.floor(months/12), m = months%12;
+  if(y===0) return m+' bulan';
+  return y+' th '+m+' bln';
+}
+
+/* ===================== Z-SCORE CALCULATIONS ===================== */
+function zWeightAge(sex, ageM, bb){
+  const med = interp(REF[sex].weightAge.points, REF[sex].weightAge.median, ageM);
+  const sd = med*SDF.weightAge;
+  return {z:(bb-med)/sd, med, sd};
+}
+function zHeightAge(sex, ageM, tb){
+  const med = interp(REF[sex].heightAge.points, REF[sex].heightAge.median, ageM);
+  const sd = med*SDF.heightAge;
+  return {z:(tb-med)/sd, med, sd};
+}
+function zWeightHeight(sex, tb, bb){
+  const med = interp(REF.weightHeight.points, REF.weightHeight[sex], tb);
+  const sd = med*SDF.weightHeight;
+  return {z:(bb-med)/sd, med, sd};
+}
+function zBmiYoung(sex, ageM, bmi){
+  // approximate young BMI median via weight/height medians at this age
+  const wMed = interp(REF[sex].weightAge.points, REF[sex].weightAge.median, ageM);
+  const hMed = interp(REF[sex].heightAge.points, REF[sex].heightAge.median, ageM);
+  const med = wMed/Math.pow(hMed/100,2);
+  const sd = med*SDF.bmi;
+  return {z:(bmi-med)/sd, med, sd};
+}
+function zBmiOlder(sex, ageYears, bmi){
+  const med = interp(REF[sex].bmiYears.points, REF[sex].bmiYears.median, ageYears);
+  const sd = med*SDF.bmi;
+  return {z:(bmi-med)/sd, med, sd};
+}
+
+/* ===================== CATEGORIZATION ===================== */
+function catTBU(z){
+  if(z>3) return {label:'Tinggi', color:'kuning'};
+  if(z>=-2) return {label:'Tinggi badan normal', color:'hijau'};
+  if(z>=-3) return {label:'Pendek (Stunted)', color:'kuning'};
+  return {label:'Sangat pendek (Severely Stunted)', color:'merah'};
+}
+function catBBU(z){
+  if(z>1) return {label:'Risiko berat badan lebih', color:'kuning'};
+  if(z>=-2) return {label:'Berat badan normal', color:'hijau'};
+  if(z>=-3) return {label:'Berat badan kurang (Underweight)', color:'kuning'};
+  return {label:'Berat badan sangat kurang (Severely Underweight)', color:'merah'};
+}
+function catBBTBorIMTyoung(z){
+  if(z>3) return {label:'Obesitas', color:'merah'};
+  if(z>2) return {label:'Gizi lebih (Overweight)', color:'kuning'};
+  if(z>1) return {label:'Risiko gizi lebih', color:'kuning'};
+  if(z>=-2) return {label:'Gizi baik', color:'hijau'};
+  if(z>=-3) return {label:'Gizi kurang (Wasted)', color:'kuning'};
+  return {label:'Gizi buruk (Severely Wasted)', color:'merah'};
+}
+function catIMTolder(z){
+  if(z>2) return {label:'Obesitas', color:'merah'};
+  if(z>1) return {label:'Gizi lebih (Overweight)', color:'kuning'};
+  if(z>=-2) return {label:'Gizi baik', color:'hijau'};
+  if(z>=-3) return {label:'Gizi kurang', color:'kuning'};
+  return {label:'Gizi buruk', color:'merah'};
+}
+
+const COLOR_RANK = {hijau:0, kuning:1, merah:2};
+function worstColor(colors){
+  return colors.reduce((acc,c)=> COLOR_RANK[c]>COLOR_RANK[acc] ? c : acc, 'hijau');
+}
+const COLOR_TEXT = {
+  hijau:{title:'Pertumbuhan sesuai', desc:'Status gizi anak berada pada rentang normal. Pertahankan pola makan dan pemantauan rutin.'},
+  kuning:{title:'Perlu perhatian', desc:'Ada indikator yang perlu diwaspadai. Perbaiki pola makan dan pantau lebih sering, konsultasikan ke fasilitas kesehatan bila berlanjut.'},
+  merah:{title:'Risiko masalah gizi', desc:'Terdapat indikasi risiko masalah gizi. Segera konsultasikan ke tenaga kesehatan / posyandu terdekat.'}
+};
+
+/* ===================== MPASI / EDUKASI CONTENT ===================== */
+const EDU = [
+  {range:'0–5 bulan', key:'0-5', tip:'ASI eksklusif tanpa tambahan makanan/minuman lain. Susui sesuai permintaan bayi.', menu:['ASI eksklusif setiap 2–3 jam atau sesuai permintaan']},
+  {range:'6–8 bulan', key:'6-8', tip:'Mulai MPASI dengan tekstur lumat/saring, 2–3x makan utama + ASI tetap dilanjutkan.', menu:['Bubur saring beras + hati ayam + bayam halus','Puree labu kuning + telur kuning + minyak kelapa','Bubur tempe + wortel halus']},
+  {range:'9–11 bulan', key:'9-11', tip:'Tekstur dicincang/lebih kasar, 3x makan utama + 1–2x selingan.', menu:['Nasi tim cincang + ikan + tahu + sayuran','Kentang kukus cincang + daging ayam + brokoli','Bubur kacang hijau sebagai selingan']},
+  {range:'12–23 bulan', key:'12-23', tip:'Mulai makanan keluarga dengan tekstur lebih padat, 3x makan utama + 2x selingan.', menu:['Nasi + sup ayam + tempe + sayur','Telur dadar + nasi + tumis buncis','Buah potong / pisang sebagai selingan']},
+  {range:'24–60 bulan (balita)', key:'24-60', tip:'Pola makan keluarga seimbang, variasikan sumber protein dan sayur/buah setiap hari.', menu:['Nasi + ikan/daging/telur + tahu/tempe + sayur + buah','Susu sebagai pelengkap, bukan pengganti makan utama','Batasi camilan tinggi gula dan garam']},
+  {range:'>5 tahun', key:'60plus', tip:'Terapkan gizi seimbang "Isi Piringku": setengah piring sayur & buah, sisanya karbohidrat dan protein.', menu:['Sarapan dengan karbohidrat + protein + buah','Bekal sekolah seimbang, hindari jajanan tinggi gula/garam/lemak','Aktivitas fisik rutin minimal 60 menit/hari']}
+];
+
+function renderEdukasi(focusAgeM){
+  const el = document.getElementById('edukasiContent');
+  el.innerHTML = '<div class="card">' + EDU.map((e,i)=>{
+    const isFocus = focusAgeM!=null && (
+      (e.key==='0-5' && focusAgeM<6) ||
+      (e.key==='6-8' && focusAgeM>=6 && focusAgeM<=8) ||
+      (e.key==='9-11' && focusAgeM>=9 && focusAgeM<=11) ||
+      (e.key==='12-23' && focusAgeM>=12 && focusAgeM<=23) ||
+      (e.key==='24-60' && focusAgeM>=24 && focusAgeM<=60) ||
+      (e.key==='60plus' && focusAgeM>60)
+    );
+    return `<div class="accordion-item${isFocus?' open':''}" data-idx="${i}">
+      <div class="accordion-head">
+        <span>${e.range}${isFocus?' · sesuai usia anak terakhir':''}</span>
+        <span class="chev">▾</span>
+      </div>
+      <div class="accordion-body"><div class="accordion-body-inner">
+        <p>${e.tip}</p>
+        <ul>${e.menu.map(m=>'<li>'+m+'</li>').join('')}</ul>
+      </div></div>
+    </div>`;
+  }).join('') + '</div>';
+
+  el.querySelectorAll('.accordion-head').forEach(h=>{
+    h.addEventListener('click',()=> h.parentElement.classList.toggle('open'));
+  });
+}
+renderEdukasi(null);
+
+/* ===================== STATE ===================== */
+const state = { records: [] };
+
+/* ===================== FORM SUBMIT ===================== */
+const form = document.getElementById('giziForm');
+const errBox = document.getElementById('formError');
+
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  errBox.style.display='none';
+
+  const nama = document.getElementById('nama').value.trim();
+  const sex = document.getElementById('jk').value;
+  const tglLahir = new Date(document.getElementById('tglLahir').value);
+  const tglPeriksa = new Date(document.getElementById('tglPeriksa').value);
+  const tb = parseFloat(document.getElementById('tb').value);
+  const bb = parseFloat(document.getElementById('bb').value);
+  const asi = document.getElementById('asi').value;
+  const penyakit = document.getElementById('penyakit').value.trim();
+  const nafsu = document.getElementById('nafsu').value;
+
+  if(!nama || !sex || isNaN(tb) || isNaN(bb) || isNaN(tglLahir.getTime()) || isNaN(tglPeriksa.getTime())){
+    errBox.textContent = 'Mohon lengkapi semua data wajib (nama, jenis kelamin, tanggal, tinggi, berat).';
+    errBox.style.display='block';
+    return;
+  }
+  if(tglPeriksa < tglLahir){
+    errBox.textContent = 'Tanggal pemeriksaan tidak boleh sebelum tanggal lahir.';
+    errBox.style.display='block';
+    return;
+  }
+
+  const ageM = ageInMonths(tglLahir, tglPeriksa);
+  if(ageM>216){
+    errBox.textContent = 'Kalkulator ini dirancang untuk anak usia 0–18 tahun.';
+    errBox.style.display='block';
+    return;
+  }
+
+  const bmi = bb/Math.pow(tb/100,2);
+
+  const tbu = zHeightAge(sex, ageM, tb);
+  const bbu = zWeightAge(sex, ageM, bb);
+  const tbuCat = catTBU(tbu.z);
+  const bbuCat = catBBU(bbu.z);
+
+  let bbtb = null, bbtbCat = null;
+  if(ageM<=60){
+    bbtb = zWeightHeight(sex, tb, bb);
+    bbtbCat = catBBTBorIMTyoung(bbtb.z);
+  }
+
+  let imt, imtCat, imtLabel;
+  if(ageM<=60){
+    imt = zBmiYoung(sex, ageM, bmi);
+    imtCat = catBBTBorIMTyoung(imt.z);
+    imtLabel = 'IMT/U (0–60 bulan)';
+  } else {
+    imt = zBmiOlder(sex, ageM/12, bmi);
+    imtCat = catIMTolder(imt.z);
+    imtLabel = 'IMT/U (5–18 tahun)';
+  }
+
+  const colors = [tbuCat.color, bbuCat.color, imtCat.color];
+  if(bbtbCat) colors.push(bbtbCat.color);
+  const overall = worstColor(colors);
+
+  const record = {
+    nama, sex, tglLahir: tglLahir.toISOString().slice(0,10), tglPeriksa: tglPeriksa.toISOString().slice(0,10),
+    ageM, tb, bb, bmi, asi, penyakit, nafsu,
+    tbu, bbu, bbtb, imt, imtLabel,
+    tbuCat, bbuCat, bbtbCat, imtCat, overall
+  };
+  state.records.push(record);
+
+  renderHasil(record);
+  showPage('hasil');
+  renderRiwayat();
+});
+
+/* ===================== RENDER HASIL ===================== */
+function indexCardHtml(label, z, cat, sub){
+  return `<div class="index-card">
+    <div class="label">${label}</div>
+    <div class="zval">${isFinite(z)? z.toFixed(2):'–'} SD</div>
+    <div class="zsub">${sub}</div>
+    <span class="badge ${cat.color}">${cat.label}</span>
+  </div>`;
+}
+
+function renderHasil(r){
+  document.getElementById('hasilNama').textContent = 'Hasil Pemeriksaan: ' + r.nama;
+  document.getElementById('hasilSub').textContent = `${r.sex==='boy'?'Laki-laki':'Perempuan'} · Usia ${ageLabel(r.ageM)} · Tanggal periksa ${r.tglPeriksa}`;
+
+  const ct = COLOR_TEXT[r.overall];
+  let html = `<div class="overall-banner ${r.overall}">
+    <div class="status-dot ${r.overall}"></div>
+    <div><h3>${ct.title}</h3><p>${ct.desc}</p></div>
+  </div>`;
+
+  html += '<div class="index-grid">';
+  html += indexCardHtml('TB/U · Tinggi badan menurut usia', r.tbu.z, r.tbuCat, 'Median ref. '+r.tbu.med.toFixed(1)+' cm');
+  html += indexCardHtml('BB/U · Berat badan menurut usia', r.bbu.z, r.bbuCat, 'Median ref. '+r.bbu.med.toFixed(1)+' kg');
+  if(r.bbtb){
+    html += indexCardHtml('BB/TB · Berat menurut tinggi', r.bbtb.z, r.bbtbCat, 'Median ref. '+r.bbtb.med.toFixed(1)+' kg');
+  } else {
+    html += `<div class="index-card"><div class="label">BB/TB</div><div class="zsub" style="margin-top:8px;">Tidak digunakan untuk usia &gt;5 tahun, lihat IMT/U.</div></div>`;
+  }
+  html += indexCardHtml(r.imtLabel, r.imt.z, r.imtCat, 'IMT terhitung '+r.bmi.toFixed(1));
+  html += '</div>';
+
+  // recommendation box pulling from EDU based on age
+  const e = EDU.find(x=>{
+    if(x.key==='0-5') return r.ageM<6;
+    if(x.key==='6-8') return r.ageM>=6 && r.ageM<=8;
+    if(x.key==='9-11') return r.ageM>=9 && r.ageM<=11;
+    if(x.key==='12-23') return r.ageM>=12 && r.ageM<=23;
+    if(x.key==='24-60') return r.ageM>=24 && r.ageM<=60;
+    return r.ageM>60;
+  });
+  if(e){
+    html += `<div class="reco-box">
+      <h4>Rekomendasi gizi untuk usia ${e.range}</h4>
+      <p style="margin:0 0 8px;">${e.tip}</p>
+      <ul>${e.menu.map(m=>'<li>'+m+'</li>').join('')}</ul>
+    </div>`;
+  }
+  document.getElementById('hasilContent').innerHTML = html;
+  renderEdukasi(r.ageM);
+}
+
+/* ===================== RIWAYAT ===================== */
+function renderRiwayat(){
+  const wrap = document.getElementById('riwayatContent');
+  if(state.records.length===0){
+    wrap.innerHTML = `<div class="empty-state"><span class="icon">🌿</span>Belum ada data. Mulai dengan menghitung status gizi anak di menu Kalkulator.</div>`;
+    return;
+  }
+  const names = [...new Set(state.records.map(r=>r.nama))];
+  let html = `<div class="chart-controls">
+    <select id="riwayatNama" class="chart-select"></select>
+    <select id="riwayatIndex" class="chart-select">
+      <option value="tbu">TB/U</option>
+      <option value="bbu">BB/U</option>
+      <option value="bbtb">BB/TB</option>
+      <option value="imt">IMT/U</option>
+    </select>
+  </div>
+  <div id="riwayatChart"></div>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Tanggal</th><th>Usia</th><th>BB (kg)</th><th>TB (cm)</th><th>Status</th></tr></thead>
+    <tbody id="riwayatTbody"></tbody>
+  </table></div>`;
+  wrap.innerHTML = html;
+
+  const selNama = document.getElementById('riwayatNama');
+  selNama.innerHTML = names.map(n=>`<option value="${n}">${n}</option>`).join('');
+  const selIndex = document.getElementById('riwayatIndex');
+
+  function refresh(){
+    const nama = selNama.value;
+    const idxKey = selIndex.value;
+    const recs = state.records.filter(r=>r.nama===nama).sort((a,b)=> a.tglPeriksa.localeCompare(b.tglPeriksa));
+
+    const tbody = document.getElementById('riwayatTbody');
+    tbody.innerHTML = recs.map(r=>`<tr>
+      <td>${r.tglPeriksa}</td>
+      <td>${ageLabel(r.ageM)}</td>
+      <td>${r.bb}</td>
+      <td>${r.tb}</td>
+      <td><span class="dot-inline" style="background:var(--${r.overall==='hijau'?'green':r.overall==='kuning'?'yellow':'red'})"></span>${COLOR_TEXT[r.overall].title}</td>
+    </tr>`).join('');
+
+    document.getElementById('riwayatChart').innerHTML = buildZChart(recs, idxKey);
+  }
+  selNama.addEventListener('change', refresh);
+  selIndex.addEventListener('change', refresh);
+  refresh();
+}
+
+function buildZChart(recs, idxKey){
+  const valid = recs.filter(r=> r[idxKey] !== null && r[idxKey] !== undefined);
+  if(valid.length===0) return '<p class="hint">Indeks ini tidak tersedia untuk riwayat anak ini (misalnya BB/TB pada usia &gt;5 tahun).</p>';
+
+  const W=640,H=240,padL=44,padR=18,padT=18,padB=34;
+  const zMin=-4, zMax=4;
+  function yOf(z){ return padT + (zMax-z)/(zMax-zMin) * (H-padT-padB); }
+  function xOf(i){ return padL + (valid.length===1? (W-padL-padR)/2 : i*(W-padL-padR)/(valid.length-1)); }
+
+  const bands = [
+    {from:-4, to:-3, color:'#FBE6EA'},
+    {from:-3, to:-2, color:'#FCF2DD'},
+    {from:-2, to:1, color:'#E7F6EE'},
+    {from:1, to:2, color:'#FCF2DD'},
+    {from:2, to:4, color:'#FBE6EA'}
+  ];
+  let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block;margin:0 auto 8px;">`;
+  bands.forEach(b=>{
+    svg += `<rect x="${padL}" y="${yOf(b.to)}" width="${W-padL-padR}" height="${yOf(b.from)-yOf(b.to)}" fill="${b.color}"/>`;
+  });
+  [-3,-2,-1,0,1,2,3].forEach(g=>{
+    svg += `<line x1="${padL}" x2="${W-padR}" y1="${yOf(g)}" y2="${yOf(g)}" stroke="#ffffff" stroke-width="1"/>`;
+    svg += `<text x="${padL-8}" y="${yOf(g)+4}" font-size="10" fill="#7C8A96" text-anchor="end">${g}</text>`;
+  });
+
+  const pts = valid.map((r,i)=> `${xOf(i)},${yOf(r[idxKey].z)}`).join(' ');
+  svg += `<polyline points="${pts}" fill="none" stroke="#4FA0CF" stroke-width="2.5"/>`;
+  valid.forEach((r,i)=>{
+    const col = r[idxKey+'Cat'] ? (r[idxKey+'Cat'].color==='hijau'?'#48A97C':r[idxKey+'Cat'].color==='kuning'?'#D89A2C':'#D85C72') : '#4FA0CF';
+    svg += `<circle cx="${xOf(i)}" cy="${yOf(r[idxKey].z)}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5"/>`;
+    svg += `<text x="${xOf(i)}" y="${H-padB+16}" font-size="9.5" fill="#7C8A96" text-anchor="middle">${r.tglPeriksa.slice(5)}</text>`;
+  });
+  svg += '</svg>';
+  svg += '<p class="hint" style="text-align:center;">Pita hijau/kuning/merah menggambarkan rentang Z-score umum sebagai panduan visual.</p>';
+  return svg;
+}
+
+renderRiwayat();
+
+})();
+</script>
+</body>
+</html>
